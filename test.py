@@ -30,8 +30,3 @@ while 1:
             elif i.key == pygame.K_2:
                 volume = volume + 0.1
                 pygame.mixer.music.set_volume(volume)
-
-
-    pygame.time.delay(20)
-
-              
