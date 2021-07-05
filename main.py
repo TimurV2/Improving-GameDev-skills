@@ -13,6 +13,8 @@ screen_size = (screen_width, screen_height)
 pygame.init()
 pygame.font.init()
 pygame.display.init()
+pygame.mixer.pre_init(44100, 32, 2, 4096)
+pygame.mixer.init()
 screen = pygame.display.set_mode(screen_size)
 
 
@@ -36,8 +38,6 @@ class Game:
         menu_bckg = pygame.image.load('menu.jpg')
 
         music = 'menu_music.ogg'
-        pygame.mixer.pre_init(44100, 32, 2, 4096)
-        pygame.mixer.init()
         pygame.mixer.music.load(music)                  # Настройка микшера для проигрывания в меню, музыка ставится на паузу с помощью ПРОБЕЛА
         pygame.mixer.music.play(-1)
         pygame.mixer.Sound(music)
@@ -46,8 +46,10 @@ class Game:
         start_btn = button(140, 70)
         quit_btn = button(140, 70)
 
+        volume = 1
         show = True
         while show:
+
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
@@ -59,21 +61,28 @@ class Game:
                             pygame.mixer.music.pause()          # дописать чтобы в меню можно было убавить музыку
                         else:
                             pygame.mixer.music.unpause()
+                    elif event.key == pygame.K_1:               # Убавление звука на "1"
+                        volume -= 0.1
+                        pygame.mixer.music.set_volume(volume)
+                    elif event.key == pygame.K_2:               # Прибавление звука на "2"
+                        volume += 0.1
+                        pygame.mixer.music.set_volume(volume)
 
+            pygame.init()
             pygame.display.update()
             screen.blit(menu_bckg, (0, 0))
-            start_btn.draw(1700, 500, "Start", start())          # Здесь реализованы кнопки начала игры и выхода
-            quit_btn.draw(1700, 600, "Quit")
+
+            start_btn.draw(1700, 500, "Start", start)          # Здесь реализованы кнопки начала игры и выхода
+            quit_btn.draw(1700, 600, "Quit", quit)
 
     def run(self):
 
+        pygame.display.init()
         clock = pygame.time.Clock()
         pygame.display.set_caption('Выжить на сессии')
         running = True
 
         file = 'secret.ogg'
-        pygame.mixer.pre_init(44100, 32, 2, 4096)
-        pygame.mixer.init()
         pygame.mixer.music.load(file)                   # Настройка микшера для проигрывания, музыка ставится на паузу с помощью ПРОБЕЛА
         pygame.mixer.music.play(-1)
         pygame.mixer.Sound(file)
@@ -87,6 +96,8 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                    pygame.quit()
+                    quit()
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
@@ -112,21 +123,20 @@ class Game:
     def movement(self):                 # Здесь прописано движение персонажа игрока с его прорисовкой
 
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_RIGHT]:
+        if keys[pygame.K_d]:
             self.x += self.speed
-        if keys[pygame.K_LEFT]:
+        if keys[pygame.K_a]:
             self.x -= self.speed
-        if keys[pygame.K_UP]:
+        if keys[pygame.K_w]:
             self.y -= self.speed
-        if keys[pygame.K_DOWN]:
+        if keys[pygame.K_s]:
             self.y += self.speed
-        pygame.draw.circle(screen, pygame.Color("Green"), (self.x, self.y), 30)
+        pygame.draw.circle(screen, pygame.Color("Green"), (float(self.x), int(self.y)), 30)
 
 
 if __name__ == '__main__':
     game = Game(screen_width / 6, screen_height / 2, 15)
     game.menu()
-    #game.run()
 
 
 def start():
