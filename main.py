@@ -1,13 +1,14 @@
-from Logick import *
+import sys
 import pygame
 from pygame import *
 import tkinter as tk
 from tkinter import *
+from Logick import *
 root = tk.Tk()
-
 
 screen_width = root.winfo_screenwidth()             # | Узнаём высоту и ширину экрана пользователя
 screen_height = root.winfo_screenheight()           # |
+
 screen_size = (screen_width, screen_height)
 
 pygame.init()
@@ -16,15 +17,16 @@ pygame.display.init()
 pygame.mixer.pre_init(44100, 32, 2, 4096)
 pygame.mixer.init()
 screen = pygame.display.set_mode(screen_size)
+# teacher_1 = Colliding()                           # Не могу реализовать класс Colliding для проверки вхождения игрока в зону вхождения
 
 
 class Game:
 
-    def __init__(self, x, y, speed):
+    def __init__(self, x, y):
         # self.screen = pygame.display.set_mode(screen_size)      # установка размера окна пользователя, сделал переменную @screen глобальной в начале кода, чтобы был удобный доступ
         self.x = x
         self.y = y
-        self.speed = speed
+        self.speed = 10
 
     global screen
 
@@ -32,7 +34,7 @@ class Game:
         pass
 
     def menu(self):
-        pygame.display.init()
+
         pygame.display.set_caption('')
 
         menu_bckg = pygame.image.load('menu.jpg')
@@ -52,8 +54,9 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    pygame.quit()
-                    quit()
+                    # show = False              # Смотри комментарий в цикле @ while running
+                    sys.exit()
+
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
                         pause = not pause
@@ -68,16 +71,14 @@ class Game:
                         volume += 0.1
                         pygame.mixer.music.set_volume(volume)
 
-            pygame.init()
             pygame.display.update()
             screen.blit(menu_bckg, (0, 0))
 
             start_btn.draw(1700, 500, "Start", start)          # Здесь реализованы кнопки начала игры и выхода
-            quit_btn.draw(1700, 600, "Quit", quit)
+            quit_btn.draw(1700, 600, "Quit", sys.exit)
 
     def run(self):
 
-        pygame.display.init()
         clock = pygame.time.Clock()
         pygame.display.set_caption('Выжить на сессии')
         running = True
@@ -95,9 +96,8 @@ class Game:
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    running = False
-                    pygame.quit()
-                    quit()
+                    # running = False           # Можно неприсваивать @running = False, тк строчка sys.exit() выполняет всю работу и программа завершается без ошибок
+                    sys.exit()
 
                 elif event.type == pygame.KEYUP:
                     if event.key == pygame.K_SPACE:
@@ -116,30 +116,40 @@ class Game:
             pygame.display.update()
             back_ground_img = pygame.image.load('background.jpg')  # Ставим задний фон
             screen.blit(back_ground_img, (0, 0))
+            #teacher_1.teacher_movement(self)
             self.movement()     # Вызываем функцию движения персонажа (пока что просто зелёный шар)
 
         pygame.quit()
 
     def movement(self):                 # Здесь прописано движение персонажа игрока с его прорисовкой
 
+        global usr_x, usr_y
+
         keys = pygame.key.get_pressed()
-        if keys[pygame.K_d]:
+        if keys[pygame.K_d] and self.x < 1880:
             self.x += self.speed
-        if keys[pygame.K_a]:
+            usr_x = self.x
+        if keys[pygame.K_a] and self.x > 50:
             self.x -= self.speed
-        if keys[pygame.K_w]:
+            usr_x = self.x
+        if keys[pygame.K_w] and self.y > 50:
             self.y -= self.speed
-        if keys[pygame.K_s]:
+            usr_y = self.y
+        if keys[pygame.K_s] and self.y < 990:
             self.y += self.speed
-        pygame.draw.circle(screen, pygame.Color("Green"), (float(self.x), int(self.y)), 30)
+            usr_y = self.y
+
+        # pygame.draw.rect(screen, pygame.Color("White"), (1000, 500, 50, 50))
+        pygame.draw.circle(screen, pygame.Color("Green"), (int(self.x), int(self.y)), 30)
+
 
 
 if __name__ == '__main__':
-    game = Game(screen_width / 6, screen_height / 2, 15)
+    game = Game(screen_width / 6, screen_height / 2)
     game.menu()
 
 
 def start():
-    game = Game(screen_width / 6, screen_height / 2, 15)
+    game = Game(screen_width / 6, screen_height / 2)
     game.run()
 

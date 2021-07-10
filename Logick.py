@@ -1,5 +1,6 @@
 from main import *
 
+
 class button:
 
     def __init__(self, width, heigth):
@@ -9,8 +10,8 @@ class button:
         self.inactive_clr = (70, 68, 81)
 
     def draw(self, x, y, message, action=None):
-        pygame.init()
-        pygame.display.init()
+        # pygame.init()
+        # pygame.display.init()
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
@@ -27,3 +28,24 @@ def print_text(message, x, y, type=None):
     font = pygame.font.Font(type, 75)
     text = font.render(message, False, (255, 255, 255))
     screen.blit(text, (x, y))
+
+
+class Colliding:
+
+    def __init__(self):
+        self.x = 1000
+        self.y = 500
+        self.speed = 10
+
+    def teacher_movement(self):
+
+        self.x += self.speed
+        if self.x + 50 >= 1880 or self.x <= 50:
+            self.speed = -self.speed
+
+        self.y += self.speed
+        if self.y + 50 >= 1880 or self.y <= 50:
+            self.speed = -self.speed
+
+        pygame.draw.rect(screen, pygame.Color("White"), (self.x, self.y, 50, 50))
+
