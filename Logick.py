@@ -10,8 +10,6 @@ class button:
         self.inactive_clr = (70, 68, 81)
 
     def draw(self, x, y, message, action=None):
-        # pygame.init()
-        # pygame.display.init()
         mouse = pygame.mouse.get_pos()
         click = pygame.mouse.get_pressed()
 
