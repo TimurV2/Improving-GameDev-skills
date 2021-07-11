@@ -1,13 +1,15 @@
+from Logick import *
 import sys
 import pygame
 from pygame import *
 import tkinter as tk
 from tkinter import *
-from Logick import *
+import math
+
 root = tk.Tk()
 
-screen_width = root.winfo_screenwidth()             # | Узнаём высоту и ширину экрана пользователя
-screen_height = root.winfo_screenheight()           # |
+screen_width = root.winfo_screenwidth()             # Узнаём высоту и ширину экрана пользователя
+screen_height = root.winfo_screenheight()
 
 screen_size = (screen_width, screen_height)
 
@@ -17,7 +19,6 @@ pygame.display.init()
 pygame.mixer.pre_init(44100, 32, 2, 4096)
 pygame.mixer.init()
 screen = pygame.display.set_mode(screen_size)
-# teacher_1 = Colliding()                           # Не могу реализовать класс Colliding для проверки вхождения игрока в зону вхождения
 
 
 class Game:
@@ -26,7 +27,7 @@ class Game:
         # self.screen = pygame.display.set_mode(screen_size)      # установка размера окна пользователя, сделал переменную @screen глобальной в начале кода, чтобы был удобный доступ
         self.x = x
         self.y = y
-        self.speed = 10
+        self.speed = 15
 
     global screen
 
@@ -48,8 +49,9 @@ class Game:
         start_btn = button(140, 70)
         quit_btn = button(140, 70)
 
-        volume = 1
+        volume = 0.5
         show = True
+
         while show:
 
             for event in pygame.event.get():
@@ -58,7 +60,7 @@ class Game:
                     sys.exit()
 
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_3:             # Ставить музыку на паузу "3"
                         pause = not pause
                         if pause:
                             pygame.mixer.music.pause()          # дописать чтобы в меню можно было убавить музыку
@@ -88,11 +90,16 @@ class Game:
         pygame.mixer.music.play(-1)
         pygame.mixer.Sound(file)
         flpause = False
-        volume = 1
+        volume = 0.5
+
+        coords = (1300, 400)
+        speed = 10                      # Переменные для движения сраного чёрного шарика по кругу
+        next_tick = 500
+        angle = 0
 
         while running:
 
-            clock.tick(60)
+            clock.tick(100)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -100,7 +107,7 @@ class Game:
                     sys.exit()
 
                 elif event.type == pygame.KEYUP:
-                    if event.key == pygame.K_SPACE:
+                    if event.key == pygame.K_3:             # Ставить музыку на паузу "3"
                         flpause = not flpause
                         if flpause:
                             pygame.mixer.music.pause()
@@ -113,13 +120,19 @@ class Game:
                         volume += 0.1
                         pygame.mixer.music.set_volume(volume)
 
-            pygame.display.update()
-            back_ground_img = pygame.image.load('background.jpg')  # Ставим задний фон
-            screen.blit(back_ground_img, (0, 0))
-            #teacher_1.teacher_movement(self)
-            self.movement()     # Вызываем функцию движения персонажа (пока что просто зелёный шар)
+            ticks = pygame.time.get_ticks()
+            if ticks > next_tick:
+                next_tick += speed
+                angle += 1                                                                                      # Хрень для движения сраного чёрного шарика по кругу
+                coords = move_coords(angle, 2, coords)
+            teacher = pygame.draw.rect(screen, pygame.Color("Black"), (coords[0], coords[1], 60, 60))
 
-        pygame.quit()
+            pygame.display.update()
+            back_ground_img = pygame.image.load('background.jpg')           # Ставим задний фон
+            screen.blit(back_ground_img, (0, 0))
+            self.movement()                                         # Вызываем функцию движения персонажа (пока что просто зелёный квадрат)
+            if player.collidepoint(teacher.center):
+                teacher_1.collide()
 
     def movement(self):                 # Здесь прописано движение персонажа игрока с его прорисовкой
 
@@ -138,10 +151,28 @@ class Game:
         if keys[pygame.K_s] and self.y < 990:
             self.y += self.speed
             usr_y = self.y
+        global player
+        player = pygame.draw.rect(screen, pygame.Color("Green"), (int(self.x), int(self.y), 60, 60))
 
-        # pygame.draw.rect(screen, pygame.Color("White"), (1000, 500, 50, 50))
-        pygame.draw.circle(screen, pygame.Color("Green"), (int(self.x), int(self.y)), 30)
 
+class Colliding:
+
+    def __init__(self):
+        self.x = 1000
+        self.y = 500
+        self.speed = 30
+
+    def collide(self):                          # В этой функции мы ставим на паузу игру и вызываем окно tkinter с вопросами для пользователя (в случае если игрок в зоне препода)
+        game_pause = True
+        while game_pause:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+            pygame.display.update()
+            pygame.draw.circle(screen, pygame.Color("Red"), (500, 500), 30)
+
+
+teacher_1 = Colliding()
 
 
 if __name__ == '__main__':
@@ -153,3 +184,7 @@ def start():
     game = Game(screen_width / 6, screen_height / 2)
     game.run()
 
+
+def move_coords(angle, radius, coords):             # Ещё хрень для движения сраного чёрного шарика
+    theta = math.radians(angle)
+    return coords[0] + radius * math.cos(theta), coords[1] + radius * math.sin(theta)
