@@ -28,22 +28,4 @@ def print_text(message, x, y, type=None):
     screen.blit(text, (x, y))
 
 
-class Colliding:
-
-    def __init__(self):
-        self.x = 1000
-        self.y = 500
-        self.speed = 10
-
-    def teacher_movement(self):
-
-        self.x += self.speed
-        if self.x + 50 >= 1880 or self.x <= 50:
-            self.speed = -self.speed
-
-        self.y += self.speed
-        if self.y + 50 >= 1880 or self.y <= 50:
-            self.speed = -self.speed
-
-        pygame.draw.rect(screen, pygame.Color("White"), (self.x, self.y, 50, 50))
 
