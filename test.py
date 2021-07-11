@@ -1,32 +1,21 @@
-import pygame
-import sys
+import tkinter as tk
+from tkinter import *
 
-sc = pygame.display.set_mode((400, 300))
-pygame.init()
-pygame.mixer.music.load('secret.ogg')
-pygame.mixer.music.set_volume(1)
-pygame.mixer.music.play()
-pygame.mixer.pre_init(44100, 32, 2, 4096)
-pygame.mixer.init()
 
-flpause = True
-volume = 1
+def clicked():
+    res = "Привет {}".format(txt.get())
+    lbl.configure(text=res)
 
-while 1:
-    for i in pygame.event.get():
-        if i.type == pygame.QUIT:
-            sys.exit()
 
-        elif i.type == pygame.KEYDOWN:
-            if i.key == pygame.K_SPACE:
-                flpause = not flpause
-                if flpause:
-                    pygame.mixer.music.pause()
-                else:
-                    pygame.mixer.music.unpause()
-            elif i.key == pygame.K_1:
-                volume = volume - 0.1
-                pygame.mixer.music.set_volume(volume)
-            elif i.key == pygame.K_2:
-                volume = volume + 0.1
-                pygame.mixer.music.set_volume(volume)
+window = Tk()
+window.title("Добро пожаловать в приложение PythonRu")
+window.geometry('400x250')
+lbl = Label(window, text="Привет")
+lbl.grid(column=0, row=0)
+txt = Entry(window,width=10)
+txt.grid(column=1, row=0)
+txt.focus()
+btn = Button(window, text="Клик!", command=clicked)
+btn.grid(column=2, row=0)
+window.mainloop()
+
