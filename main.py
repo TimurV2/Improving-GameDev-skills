@@ -93,7 +93,7 @@ class Game:
         volume = 0.5
 
         coords = (1300, 400)
-        speed = 10                      # Переменные для движения сраного чёрного шарика по кругу
+        speed = 10                      # Переменные для движения шарика по кругу
         next_tick = 500
         angle = 0
 
@@ -123,7 +123,7 @@ class Game:
             ticks = pygame.time.get_ticks()
             if ticks > next_tick:
                 next_tick += speed
-                angle += 1                                                                                      # Хрень для движения сраного чёрного шарика по кругу
+                angle += 1                                                                                      # Для движения чёрного шарика по кругу
                 coords = move_coords(angle, 2, coords)
             teacher = pygame.draw.rect(screen, pygame.Color("Black"), (coords[0], coords[1], 60, 60))
 
@@ -185,6 +185,6 @@ def start():
     game.run()
 
 
-def move_coords(angle, radius, coords):             # Ещё хрень для движения сраного чёрного шарика
+def move_coords(angle, radius, coords):             # Для движения сраного чёрного шарика
     theta = math.radians(angle)
     return coords[0] + radius * math.cos(theta), coords[1] + radius * math.sin(theta)
